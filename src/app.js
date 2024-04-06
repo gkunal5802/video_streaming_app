@@ -25,4 +25,11 @@ app.use(express.static("public"));
 
 // allows to perfrom CRUD operations on cookie. send/get cookie to/from browser
 app.use(cookieParser());
+
+// TODO: routes import
+import userRouter from "./routes/user.routes.js";
+
+// * Routes Declarations
+app.use("/api/v1/users", userRouter);
+
 export { app };
