@@ -3,8 +3,8 @@
 // we are overriding some of the methods of Error class to provide a better error message to user
 class ApiError extends Error {
   constructor(
-    message = "Something went wrong",
     statuscode,
+    message = "Something went wrong",
     errors = [],
     stack = ""
   ) {
@@ -22,3 +22,5 @@ class ApiError extends Error {
     }
   }
 }
+
+export { ApiError };

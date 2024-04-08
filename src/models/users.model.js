@@ -28,7 +28,6 @@ const userSchema = new Schema(
     watchHistory: {
       type: Schema.Types.ObjectId,
       ref: "Video",
-      required: true,
     },
     avatar: {
       type: String, // cloudinary url,

@@ -4,16 +4,16 @@ import fs from "fs";
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  api_secret: process.env.CLOUDINARY_SECRET_KEY,
 });
 
-cloudinary.uploader.upload(
-  "https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
-  { public_id: "olympic_flag" },
-  function (error, result) {
-    console.log(result);
-  }
-);
+// cloudinary.uploader.upload(
+//   "https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
+//   { public_id: "olympic_flag" },
+//   function (error, result) {
+//     console.log(result);
+//   }
+// );
 
 const uploadOnCloudinary = async (localFilePath) => {
   try {
@@ -26,9 +26,11 @@ const uploadOnCloudinary = async (localFilePath) => {
 
     console.log("File uploaded successfully: ", response.url);
     // return the file object to the user which contains url and other stuff
+    fs.unlinkSync(localFilePath);
     return response;
   } catch (error) {
     // remove the locally saved temporary file as the uplaod got failed
+    console.error("Error:", error);
     fs.unlinkSync(localFilePath);
   }
 };
