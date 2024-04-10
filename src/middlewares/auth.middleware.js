@@ -1,17 +1,17 @@
-import { User } from "../models/users.model";
-import { ApiError } from "../utils/ApiError";
+import { User } from "../models/users.model.js";
+import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
 
-export const verifyJWT = async (req, res, next) => {
+export const verifyJWT = async (req, _, next) => {
   try {
     // req.cookie is available because of cookie-parser
     const token =
-      req.cookies?.accessToken || req.headers["Authorization"].split(" ")[1];
+      req.cookies?.accessToken || req.headers("Authorization").split(" ")[1];
 
     if (!token) throw new ApiError(401, "Unauthorized request");
 
     // learn from jwt.io documentation about verification
-    const decodedToken = jwt.verify(token, process.env.ACCESS_SECRET_TOKEN);
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     // decodedToken contains information which we give while signing the jwt token
     const user = await User.findById(decodedToken?._id).select(
@@ -23,6 +23,6 @@ export const verifyJWT = async (req, res, next) => {
     req.user = user; // manually setting the user onto request so that logged in user can be accessed anywhere in the node.
     next();
   } catch (error) {
-    new ApiError(400, error?.message || "Invalid access token");
+    throw new ApiError(400, error?.message || "Invalid access token");
   }
 };

@@ -6,21 +6,24 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
-    const user = await User.findOne({ userId });
+    const user = await User.findById(userId);
+
     const refreshToken = await user.generateRefreshToken();
-    const AccessToken = await user.generateAccessToken();
+    const accessToken = await user.generateAccessToken();
 
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
-    return { AccessToken, refreshToken };
+    return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(
       500,
-      "Something went wrong while generating access token and refresh token"
+      error?.message ||
+        "Something went wrong while generating access token and refresh token"
     );
   }
 };
+
 export const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
   const { username, email, password, fullName } = req.body;
@@ -99,7 +102,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
   // check username or email
-  if (!username || !email) {
+  if (!username && !email) {
     throw new ApiError(400, "username or email is invalid");
   }
   // get the user with username and email
@@ -111,7 +114,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User with given username or email is not found");
 
   // check password
-  const isPasswordValid = await user.isPasswordCorrect(password); // methods are accessed only by existing user not by the model i.e. User
+  const isPasswordValid = await user.isPasswordCorrect(password, user.password); // methods are accessed only by existing user not by the model i.e. User
 
   if (!isPasswordValid) throw new ApiError(401, "Invalid user credentials");
 
